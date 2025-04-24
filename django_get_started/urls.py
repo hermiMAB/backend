@@ -1,43 +1,33 @@
-"""
-Definition of urls for django_get_started.
-"""
-
 from datetime import datetime
-from django.conf.urls import patterns, url
+from django.urls import path, re_path
+from app import views
 from app.forms import BootstrapAuthenticationForm
+from django.contrib.auth import views as auth_views
 
-# Uncomment the next lines to enable the admin:
-# from django.conf.urls import include
-# from django.contrib import admin
-# admin.autodiscover()
-
-urlpatterns = patterns('',
+urlpatterns = [
     # Examples:
-    url(r'^$', 'app.views.home', name='home'),
-    url(r'^contact$', 'app.views.contact', name='contact'),
-    url(r'^about', 'app.views.about', name='about'),
-    url(r'^login/$',
-        'django.contrib.auth.views.login',
-        {
-            'template_name': 'app/login.html',
-            'authentication_form': BootstrapAuthenticationForm,
-            'extra_context':
-            {
-                'title':'Log in',
-                'year':datetime.now().year,
-            }
-        },
-        name='login'),
-    url(r'^logout$',
-        'django.contrib.auth.views.logout',
-        {
-            'next_page': '/',
-        },
-        name='logout'),
+    path('', views.home, name='home'),
+    path('contact/', views.contact, name='contact'),
+    path('about/', views.about, name='about'),
+    
+    path('login/', auth_views.LoginView.as_view(
+        template_name='app/login.html',
+        authentication_form=BootstrapAuthenticationForm,
+        extra_context={
+            'title': 'Log in',
+            'year': datetime.now().year,
+        }),
+        name='login'
+    ),
 
+    path('logout/', auth_views.LogoutView.as_view(
+        next_page='/'),
+        name='logout'
+    ),
+    
     # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
+    # path('admin/doc/', include('django.contrib.admindocs.urls')),
+    
     # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
-)
+    # path('admin/', admin.site.urls),
+]
